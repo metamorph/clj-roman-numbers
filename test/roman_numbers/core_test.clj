@@ -8,9 +8,9 @@
   (testing "drop-non-valid-digits"
     (is (= [:X :V] (filter valid-roman [:X :V :Z]) ))))
 
-(deftest unpack
+(deftest test-unpack
   (testing "subtractive forms"
-    (is (= "" ""))))
+    (is (= (str->roman "IIII") (unpack (str->roman "IV"))))))
 
 
 (deftest addition

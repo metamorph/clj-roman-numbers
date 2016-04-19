@@ -10,8 +10,17 @@
 (defn str->roman "Convert string to valid keyword vector" [s] (filter valid-roman (to-kw s)))
 (defn roman->str [r] (str/join (map name r)))
 
-
-(defn unpack "Expand by replacing subtracting forms" [numeral] numeral)
+(defn roman->unpacked [r]
+  (case (roman->str r)
+    "IV" (str->roman "IIII")
+    "IX" (str->roman "VIIII")
+    "XL" (str->roman "XXXX")
+    "XC" (str->roman "LXXXX")
+    "CD" (str->roman "CCCC")
+    "CM" (str->roman "DCCCC")
+    r))
+(defn unpack "Expand by replacing subtracting forms" [numeral]
+  (mapcat roman->unpacked (partition-all 2 numeral)))
 (defn join "Join to roman numbers, return the sorted version" [n1 n2] (concat n1 n2))
 (defn pack "Take an expanded numeral and pack it using subtracting forms" [numeral] numeral)
 
