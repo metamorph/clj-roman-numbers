@@ -21,7 +21,9 @@
     r))
 (defn unpack "Expand by replacing subtracting forms" [numeral]
   (mapcat roman->unpacked (partition-all 2 numeral)))
-(defn join "Join to roman numbers, return the sorted version" [n1 n2] (concat n1 n2))
+(defn join "Join to roman numbers, return the sorted version" [n1 n2]
+  (let [key-fn #(.indexOf (reverse *valid-roman-digits*) %)]
+    (sort-by key-fn (concat n1 n2))))
 (defn pack "Take an expanded numeral and pack it using subtracting forms" [numeral] numeral)
 
 (defn add-roman [a b]
