@@ -3,22 +3,20 @@
   taken from here: http://turner.faculty.swau.edu/mathematics/materialslibrary/roman/"
   (:require [clojure.string :as str]))
 
-(def valid-roman-chars [\M \L \C \D \X \V \I])
-(def subtractive-forms {"IV" "IIII"
-                         "IX" "VIIII"
-                         "XL" "XXXX"
-                         "XC" "LXXXX"
-                         "CD" "CCCC"
-                         "CM" "DCCCC"})
+(def *valid-roman-digits* [:I :V :X :L :C :D :M])
+(defn to-kw "Convert a string to symbols" [s] (->> s (map str/upper-case) (map keyword)))
+(defn valid-roman "Predicate that checks if a value is a roman numeral" [d]
+  (some #{d} *valid-roman-digits*))
+(defn str->roman "Convert string to valid keyword vector" [s] (filter valid-roman (to-kw s)))
+(defn roman->str [r] (str/join (map name r)))
 
-(defn str->roman
-  "Convert string to a valid roman number.
-  Asserts that the string doesn't contain any ugly chars.
-  Lower case chars will be upper-cased"
-  [s]
-  {:post [(empty? (clojure.set/difference
-                   (set %)
-                   (apply hash-set valid-roman-chars)))]}
-  (->> (filter #(not (= \space %)) s)
-       (map str/upper-case)
-       (apply str)))
+
+(defn unpack "Expand by replacing subtracting forms" [numeral] numeral)
+(defn join "Join to roman numbers, return the sorted version" [n1 n2] (concat n1 n2))
+(defn pack "Take an expanded numeral and pack it using subtracting forms" [numeral] numeral)
+
+(defn add-roman [a b]
+  (let [a-norm (unpack (str->roman a))
+        b-norm (unpack (str->roman b))
+        merged (join a-norm b-norm)]
+    (roman->str (pack merged))))

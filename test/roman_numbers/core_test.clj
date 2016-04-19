@@ -2,10 +2,20 @@
   (:require [clojure.test :refer :all]
             [roman-numbers.core :refer :all]))
 
-(deftest verify-validator
-  (testing "handles lower-case"
-    (is (= "XIV" (str->roman "XIV")))
-    (is (= "XIV" (str->roman "xiv")))
-    (is (= "XIV" (str->roman "x I v  "))))
-  (testing "fails on illegal input"
-    (is (thrown? AssertionError (str->roman "xyb")))))
+(deftest tools
+  (testing "to-kw"
+    (is (= [:X :I :V] (to-kw "xiv"))))
+  (testing "drop-non-valid-digits"
+    (is (= [:X :V] (filter valid-roman [:X :V :Z]) ))))
+
+(deftest unpack
+  (testing "subtractive forms"
+    (is (= "" ""))))
+
+
+(deftest addition
+  (testing "simple addition"
+    (is (= "II" (add-roman "I" "I")))
+    (is (= "VI" (add-roman "V" "I"))))
+  (testing "addition step 2"
+    (is (= "VI" (add-roman "III" "III")))))
