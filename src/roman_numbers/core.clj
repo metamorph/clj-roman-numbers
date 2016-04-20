@@ -31,3 +31,5 @@
         b-norm (unpack (str->roman b))
         merged (join a-norm b-norm)]
     (roman->str (pack merged))))
+
+;; TODO: The pack step.. perhaps it's easier to group the numeral {:X 3 :M 1} and use that to adjust according to subtracting forms?
