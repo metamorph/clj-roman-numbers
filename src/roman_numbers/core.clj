@@ -10,6 +10,10 @@
 (defn str->roman "Convert string to valid keyword vector" [s] (filter valid-roman (to-kw s)))
 (defn roman->str [r] (str/join (map name r)))
 
+(defn roman-sort "Sort a roman numeral from large to small digits"
+  [r]
+  (sort-by #(.indexOf (reverse *valid-roman-digits*) %) r))
+
 (defn roman->unpacked [r]
   (case (roman->str r)
     "IV" (str->roman "IIII")
@@ -22,8 +26,7 @@
 (defn unpack "Expand by replacing subtracting forms" [numeral]
   (mapcat roman->unpacked (partition-all 2 numeral)))
 (defn join "Join to roman numbers, return the sorted version" [n1 n2]
-  (let [key-fn #(.indexOf (reverse *valid-roman-digits*) %)]
-    (sort-by key-fn (concat n1 n2))))
+  (roman-sort (concat n1 n2)))
 (defn pack "Take an expanded numeral and pack it using subtracting forms" [numeral] numeral)
 
 (defn add-roman [a b]
@@ -32,4 +35,4 @@
         merged (join a-norm b-norm)]
     (roman->str (pack merged))))
 
-;; TODO: The pack step.. perhaps it's easier to group the numeral {:X 3 :M 1} and use that to adjust according to subtracting forms?
+;; TODO: The pack step.. perhaps it's easier to *group* the numeral {:X 3 :M 1}. But the substitution of substractives cannot be performed on the map. It needs to be performed on a sequence instead.

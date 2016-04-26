@@ -12,6 +12,10 @@
   (testing "subtractive forms"
     (is (= (str->roman "IIII") (unpack (str->roman "IV"))))))
 
+(deftest test-sorting
+  (testing "simple sort"
+    (is (= (str->roman "xvii") (roman-sort (str->roman "ixvi"))))))
+
 
 (deftest addition
   (testing "simple addition"
