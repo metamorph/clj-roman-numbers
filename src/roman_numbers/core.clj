@@ -3,12 +3,43 @@
   taken from here: http://turner.faculty.swau.edu/mathematics/materialslibrary/roman/"
   (:require [clojure.string :as str]))
 
-(def *valid-roman-digits* [:I :V :X :L :C :D :M])
-(defn to-kw "Convert a string to symbols" [s] (->> s (map str/upper-case) (map keyword)))
-(defn valid-roman "Predicate that checks if a value is a roman numeral" [d]
+(declare *valid-roman-digits*)
+
+(defn to-kw "Convert a string to symbols"
+  [s]
+  (->> s (map str/upper-case) (map keyword)))
+
+(defn valid-roman "Predicate that checks if a value is a roman numeral"
+  [d]
   (some #{d} *valid-roman-digits*))
-(defn str->roman "Convert string to valid keyword vector" [s] (filter valid-roman (to-kw s)))
-(defn roman->str [r] (str/join (map name r)))
+
+(defn str->roman "Convert string to valid keyword vector"
+  [s] (filter valid-roman (to-kw s)))
+
+(defn roman->str "Convert a roman numeral to string"
+  [r] (str/join (map name r)))
+
+(def *valid-roman-digits* "The only valid roman digits"
+  [:I :V :X :L :C :D :M])
+
+(def *grouping-table* "Grouping equivalence table"
+  {(str->roman "IIIII") (str->roman "V")
+   (str->roman "VV")    (str->roman "X")
+   (str->roman "XXXXX") (str->roman "L")
+   (str->roman "LL")    (str->roman "C")
+   (str->roman "CCCCC") (str->roman "D")
+   (str->roman "DD")    (str->roman "M")})
+
+(def *subtractive-forms* "Subtractive forms"
+  {(str->roman "IV") (str->roman "IIII")
+   (str->roman "IX") (str->roman "XXXX")
+   (str->roman "XL") (str->roman "VIIII")
+   (str->roman "XC") (str->roman "LXXXX")
+   (str->roman "CD") (str->roman "CCCC")
+   (str->roman "CM") (str->roman "DCCCC")})
+
+(defn starts-with? "Check if the head of +col+ is +s+"
+  [col s] (let [sub (take (count s) col)] (= sub s)))
 
 (defn roman-sort "Sort a roman numeral from large to small digits"
   [r]
@@ -23,6 +54,7 @@
     "CD" (str->roman "CCCC")
     "CM" (str->roman "DCCCC")
     r))
+
 (defn unpack "Expand by replacing subtracting forms" [numeral]
   (mapcat roman->unpacked (partition-all 2 numeral)))
 (defn join "Join to roman numbers, return the sorted version" [n1 n2]
@@ -35,4 +67,3 @@
         merged (join a-norm b-norm)]
     (roman->str (pack merged))))
 
-;; TODO: The pack step.. perhaps it's easier to *group* the numeral {:X 3 :M 1}. But the substitution of substractives cannot be performed on the map. It needs to be performed on a sequence instead.
