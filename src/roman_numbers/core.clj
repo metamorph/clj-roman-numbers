@@ -32,8 +32,8 @@
 
 (def *subtractive-forms* "Subtractive forms"
   {(str->roman "IV") (str->roman "IIII")
-   (str->roman "IX") (str->roman "XXXX")
-   (str->roman "XL") (str->roman "VIIII")
+   (str->roman "IX") (str->roman "VIIII")
+   (str->roman "XL") (str->roman "XXXX")
    (str->roman "XC") (str->roman "LXXXX")
    (str->roman "CD") (str->roman "CCCC")
    (str->roman "CM") (str->roman "DCCCC")})
@@ -47,11 +47,11 @@
   [col f]
   (loop [result []
          col col]
-      (if (empty? col)
-        result
-        (let [[replacement count] (f col)
-              remainder (drop count col)]
-          (recur (concat result replacement) remainder)))))
+    (if (empty? col)
+      result
+      (let [[replacement count] (f col)
+            remainder (drop count col)]
+        (recur (concat result replacement) remainder)))))
 
 (defn roman-sort "Sort a roman numeral from large to small digits"
   [r]
@@ -67,8 +67,14 @@
     "CM" (str->roman "DCCCC")
     r))
 
-(defn unpack "Expand by replacing subtracting forms" [numeral]
-  (mapcat roman->unpacked (partition-all 2 numeral)))
+(defn pick-subtractive-form [col]
+  (if-let [m (first (filter (fn [k] (starts-with? col k)) (keys *subtractive-forms*)))]
+    [(get *subtractive-forms* m) (count m)]
+    [[(first col)] 1]))
+
+(defn unpack [numeral]
+  (map-and-replace numeral pick-subtractive-form))
+
 (defn join "Join to roman numbers, return the sorted version" [n1 n2]
   (roman-sort (concat n1 n2)))
 (defn pack "Take an expanded numeral and pack it using subtracting forms" [numeral] numeral)
@@ -78,4 +84,3 @@
         b-norm (unpack (str->roman b))
         merged (join a-norm b-norm)]
     (roman->str (pack merged))))
-
