@@ -41,6 +41,18 @@
 (defn starts-with? "Check if the head of +col+ is +s+"
   [col s] (let [sub (take (count s) col)] (= sub s)))
 
+(defn map-and-replace
+  "Traverse 'col' and pass build a new seq by prepending calling 'f'
+  for each version of the collection. Can't explain it in another way. See unit-tests"
+  [col f]
+  (loop [result []
+         col col]
+      (if (empty? col)
+        result
+        (let [[replacement count] (f col)
+              remainder (drop count col)]
+          (recur (concat result replacement) remainder)))))
+
 (defn roman-sort "Sort a roman numeral from large to small digits"
   [r]
   (sort-by #(.indexOf (reverse *valid-roman-digits*) %) r))
