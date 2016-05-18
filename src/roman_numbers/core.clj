@@ -3,7 +3,8 @@
   taken from here: http://turner.faculty.swau.edu/mathematics/materialslibrary/roman/"
   (:require [clojure.string :as str]))
 
-(declare *valid-roman-digits*)
+(def ^:const VALID-ROMAN-DIGITS "The only valid roman digits"
+  [:I :V :X :L :C :D :M])
 
 (defn to-kw "Convert a string to symbols"
   [s]
@@ -11,7 +12,7 @@
 
 (defn valid-roman "Predicate that checks if a value is a roman numeral"
   [d]
-  (some #{d} *valid-roman-digits*))
+  (some #{d} VALID-ROMAN-DIGITS))
 
 (defn str->roman "Convert string to valid keyword vector"
   [s] (filter valid-roman (to-kw s)))
@@ -19,10 +20,7 @@
 (defn roman->str "Convert a roman numeral to string"
   [r] (str/join (map name r)))
 
-(def *valid-roman-digits* "The only valid roman digits"
-  [:I :V :X :L :C :D :M])
-
-(def *grouping-table* "Grouping equivalence table"
+(def ^:const GROUPING-TABLE "Grouping equivalence table"
   {(str->roman "IIIII") (str->roman "V")
    (str->roman "VV")    (str->roman "X")
    (str->roman "XXXXX") (str->roman "L")
@@ -30,7 +28,7 @@
    (str->roman "CCCCC") (str->roman "D")
    (str->roman "DD")    (str->roman "M")})
 
-(def *subtractive-forms* "Subtractive forms"
+(def ^:const SUBTRACTIVE-FORMS "Subtractive forms"
   {(str->roman "IV") (str->roman "IIII")
    (str->roman "IX") (str->roman "VIIII")
    (str->roman "XL") (str->roman "XXXX")
@@ -55,7 +53,7 @@
 
 (defn roman-sort "Sort a roman numeral from large to small digits"
   [r]
-  (sort-by #(.indexOf (reverse *valid-roman-digits*) %) r))
+  (sort-by #(.indexOf (reverse VALID-ROMAN-DIGITS) %) r))
 
 (defn roman->unpacked [r]
   (case (roman->str r)
@@ -68,8 +66,8 @@
     r))
 
 (defn pick-subtractive-form [col]
-  (if-let [m (first (filter (fn [k] (starts-with? col k)) (keys *subtractive-forms*)))]
-    [(get *subtractive-forms* m) (count m)]
+  (if-let [m (first (filter (fn [k] (starts-with? col k)) (keys SUBTRACTIVE-FORMS)))]
+    [(get SUBTRACTIVE-FORMS m) (count m)]
     [[(first col)] 1]))
 
 (defn unpack [numeral]
